@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="fragments :: page_head(${pageTitle}, 'none')" />
+<style>
+  body {
+    font-family: "Inter", sans-serif;
+    background-color: #f9fafb;
+    color: #333;
+  }
+  
+  .container {
+    max-width: 600px;
+    margin: 5rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  h2 {
+    color: #008171;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  h4 {
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+  }
+
+  p {
+    margin-bottom: 1rem;
+  }
+
+  a.login-link {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    background-color: #008171;
+    color: white;
+    border-radius: 4px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+
+  a.login-link:hover {
+    background-color: #006b5d;
+  }
+
+  .spacer {
+    height: 2rem;
+  }
+</style>
+
+<body>
+  <div class="container">
+    <!-- Header menu fragment with title -->
+    <!-- <div th:replace="~{navigation_login :: header_menu('Registration Success')}"></div> -->
+
+    <div class="spacer"></div>
+
+    <h2>Votre inscription est réussie !</h2>
+
+    
+    <p>Un email de vérification vous a été envoyé. Merci de vérifier votre boîte mail pour activer votre compte.
+    Vous pouvez dès maintenant vous connecter pour accéder à votre espace.</p>
+    <a th:href="@{/login}" class="login-link">Se connecter</a>
+
+    <div class="spacer"></div>
+
+	<h4>Merci d'avoir rejoint MesMedocFacile.</h4>
+
+    <!-- Footer fragment -->
+    <div th:replace="fragments :: footer"></div>
+  </div>
+</body>
+
+</html>

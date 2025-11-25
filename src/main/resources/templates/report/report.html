@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<head th:replace="fragments :: page_head('Sales Report', 'tag')" />
+	<link rel="stylesheet" th:href="@{/css/report.css(v=1)}" />
+	<link rel="stylesheet" th:href="@{/css/navigation.css(v=12)}" />
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+	<div th:replace="navigation :: menu"></div>
+	
+	<div class="report-container">
+		<!-- Page Header -->
+		<div class="report-header">
+			<div class="report-title-section">
+				<h1 class="report-title">
+					<i class="fas fa-chart-line"></i>
+					Sales Report
+				</h1>
+				<p class="report-subtitle">
+					<i class="far fa-calendar-alt"></i>
+					<span th:text="${currentDate}">November 15, 2025</span>
+				</p>
+			</div>
+			
+			<!-- Period Filter -->
+			<div class="period-filter">
+				<button class="period-btn" th:classappend="${selectedPeriod == 'week'} ? 'active' : ''"
+					onclick="window.location.href='/report?period=week'">
+					Week
+				</button>
+				<button class="period-btn active" th:classappend="${selectedPeriod == 'month'} ? 'active' : ''"
+					onclick="window.location.href='/report?period=month'">
+					Month
+				</button>
+				<button class="period-btn" th:classappend="${selectedPeriod == 'year'} ? 'active' : ''"
+					onclick="window.location.href='/report?period=year'">
+					Year
+				</button>
+			</div>
+		</div>
+
+		<!-- Stats Grid -->
+		<div class="stats-grid">
+			<!-- Total Orders -->
+			<div class="stat-card primary">
+				<div class="stat-header">
+					<div class="stat-icon">
+						<i class="fas fa-file-medical"></i>
+					</div>
+					<div class="stat-info">
+						<div class="stat-label">Total Orders</div>
+						<div class="stat-value" th:text="${totalOrders}">0</div>
+						<span class="stat-change positive">
+							<i class="fas fa-arrow-up"></i>
+							<span th:text="${orderGrowth} + '%'">15.5%</span>
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Total Users -->
+			<div class="stat-card success">
+				<div class="stat-header">
+					<div class="stat-icon">
+						<i class="fas fa-users"></i>
+					</div>
+					<div class="stat-info">
+						<div class="stat-label">Total Users</div>
+						<div class="stat-value" th:text="${totalUsers}">0</div>
+						<span class="stat-change positive">
+							<i class="fas fa-arrow-up"></i>
+							<span th:text="${userGrowth} + '%'">8.3%</span>
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Active Orders -->
+			<div class="stat-card info">
+				<div class="stat-header">
+					<div class="stat-icon">
+						<i class="fas fa-check-circle"></i>
+					</div>
+					<div class="stat-info">
+						<div class="stat-label">Active Orders</div>
+						<div class="stat-value" th:text="${activeOrders}">0</div>
+						<span class="stat-change positive">
+							<i class="fas fa-check"></i>
+							<span>Completed</span>
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Pending Orders -->
+			<div class="stat-card warning">
+				<div class="stat-header">
+					<div class="stat-icon">
+						<i class="fas fa-clock"></i>
+					</div>
+					<div class="stat-info">
+						<div class="stat-label">Pending Orders</div>
+						<div class="stat-value" th:text="${pendingOrders}">0</div>
+						<span class="stat-change positive">
+							<i class="fas fa-hourglass-half"></i>
+							<span>In Progress</span>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Chart Section -->
+		<div class="chart-section">
+			<div class="chart-header">
+				<h2 class="chart-title">
+					<i class="fas fa-chart-bar"></i>
+					Orders Overview
+				</h2>
+				<div class="chart-actions">
+					<button class="chart-btn" onclick="refreshChart()">
+						<i class="fas fa-sync-alt"></i>
+						Refresh
+					</button>
+					<button class="chart-btn" onclick="downloadChart()">
+						<i class="fas fa-download"></i>
+						Download
+					</button>
+				</div>
+			</div>
+			
+			<div class="chart-wrapper">
+				<canvas id="ordersChart"></canvas>
+			</div>
+		</div>
+
+		<!-- Recent Activity -->
+		<div class="activity-section">
+			<div class="activity-header">
+				<h2 class="activity-title">
+					<i class="fas fa-history"></i>
+					Recent Activity
+				</h2>
+			</div>
+			
+			<div class="activity-list">
+				<div class="activity-item">
+					<div class="activity-icon">
+						<i class="fas fa-plus-circle"></i>
+					</div>
+					<div class="activity-content">
+						<div class="activity-text">New order created</div>
+						<div class="activity-time">2 hours ago</div>
+					</div>
+				</div>
+				
+				<div class="activity-item">
+					<div class="activity-icon">
+						<i class="fas fa-user-plus"></i>
+					</div>
+					<div class="activity-content">
+						<div class="activity-text">New user registered</div>
+						<div class="activity-time">5 hours ago</div>
+					</div>
+				</div>
+				
+				<div class="activity-item">
+					<div class="activity-icon">
+						<i class="fas fa-check-double"></i>
+					</div>
+					<div class="activity-content">
+						<div class="activity-text">Order completed successfully</div>
+						<div class="activity-time">8 hours ago</div>
+					</div>
+				</div>
+				
+				<div class="activity-item">
+					<div class="activity-icon">
+						<i class="fas fa-pills"></i>
+					</div>
+					<div class="activity-content">
+						<div class="activity-text">Pharmacy processed prescription</div>
+						<div class="activity-time">12 hours ago</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Export Section -->
+		<div class="export-section">
+			<button class="export-btn" onclick="exportPDF()">
+				<i class="far fa-file-pdf"></i>
+				Export PDF
+			</button>
+			<button class="export-btn" onclick="exportExcel()">
+				<i class="far fa-file-excel"></i>
+				Export Excel
+			</button>
+			<button class="export-btn primary" onclick="printReport()">
+				<i class="fas fa-print"></i>
+				Print Report
+			</button>
+		</div>
+
+		<div th:replace="fragments :: footer"></div>
+	</div>
+	
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		// Chart Data from server
+		const chartLabels = /*[[${chartLabels}]]*/ ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
+		const chartData = /*[[${chartData}]]*/ [5, 8, 12, 7, 15, 10, 13];
+		
+		// Initialize Chart
+		const ctx = document.getElementById('ordersChart').getContext('2d');
+		const ordersChart = new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels: chartLabels,
+				datasets: [{
+					label: 'Orders',
+					data: chartData,
+					borderColor: '#008171',
+					backgroundColor: 'rgba(0, 129, 113, 0.1)',
+					borderWidth: 3,
+					fill: true,
+					tension: 0.4,
+					pointRadius: 6,
+					pointHoverRadius: 8,
+					pointBackgroundColor: '#008171',
+					pointBorderColor: '#ffffff',
+					pointBorderWidth: 2,
+					pointHoverBackgroundColor: '#006c5f',
+					pointHoverBorderColor: '#ffffff',
+					pointHoverBorderWidth: 3
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				plugins: {
+					legend: {
+						display: true,
+						position: 'top',
+						labels: {
+							font: {
+								size: 14,
+								weight: 600,
+								family: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif'
+							},
+							padding: 20,
+							usePointStyle: true,
+							pointStyle: 'circle'
+						}
+					},
+					tooltip: {
+						backgroundColor: '#2c3e50',
+						titleFont: {
+							size: 14,
+							weight: 600
+						},
+						bodyFont: {
+							size: 13
+						},
+						padding: 12,
+						cornerRadius: 8,
+						displayColors: true,
+						callbacks: {
+							label: function(context) {
+								return ' Orders: ' + context.parsed.y;
+							}
+						}
+					}
+				},
+				scales: {
+					y: {
+						beginAtZero: true,
+						ticks: {
+							font: {
+								size: 12,
+								weight: 600
+							},
+							color: '#5a6c7d'
+						},
+						grid: {
+							color: 'rgba(200, 230, 223, 0.3)',
+							drawBorder: false
+						}
+					},
+					x: {
+						ticks: {
+							font: {
+								size: 12,
+								weight: 600
+							},
+							color: '#5a6c7d'
+						},
+						grid: {
+							display: false,
+							drawBorder: false
+						}
+					}
+				},
+				interaction: {
+					intersect: false,
+					mode: 'index'
+				}
+			}
+		});
+		
+		// Chart Functions
+		function refreshChart() {
+			location.reload();
+		}
+		
+		function downloadChart() {
+			const link = document.createElement('a');
+			link.download = 'orders-chart.png';
+			link.href = ordersChart.toBase64Image();
+			link.click();
+		}
+		
+		// Export Functions
+		function exportPDF() {
+			window.location.href = '/report/export/pdf';
+		}
+		
+		function exportExcel() {
+			window.location.href = '/report/export/excel';
+		}
+		
+		function printReport() {
+			window.print();
+		}
+		/*]]>*/
+	</script>
+</body>
+
+</html>

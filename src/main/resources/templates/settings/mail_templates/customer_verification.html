@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content" th:remove="tag">
+	
+	<div class="form-row-setting">
+		<label class="form-label">
+			<i class="fas fa-heading"></i>
+			Email Subject
+		</label>
+		<input type="text" class="form-control" name="CUSTOMER_VERIFY_SUBJECT" 
+			th:value="${CUSTOMER_VERIFY_SUBJECT}" placeholder="Welcome to MeDocs - Verify Your Account" required />
+	</div>
+
+	<div class="form-section" style="margin-top: 1.5rem;">
+		<label class="form-label">
+			<i class="fas fa-file-alt"></i>
+			Email Content
+		</label>
+		<textarea rows="5" name="CUSTOMER_VERIFY_CONTENT" id="customerVerificationContent" class="form-control">[[${CUSTOMER_VERIFY_CONTENT}]]</textarea>
+	</div>
+</div>
+</body>
+</html>

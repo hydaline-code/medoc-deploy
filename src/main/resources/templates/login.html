@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>Login - MEDOCS</title>
+  
+  <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <main>
+    <!-- Header -->
+    <header class="header-logo">
+      <img th:src="@{/images/logo.png}" alt="Logo" />
+      <h1>Bienvenue sur MesMedocFacile</h1>
+      <p style="text-align: center; color: #008171;">
+        Je n’ai pas de compte ? 
+        <a class="signup-link" th:href="@{/register}" style="color: #008171;">Je crée mon compte</a>
+      </p>
+    </header>
+      <hr style="width: 69%; height: 3.5px; background-color: #008171; border: none;">
+
+    <!-- Form + Description Container -->
+    <div style="
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 3rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+      padding: 1rem;
+    ">
+
+      <!--Login Form -->
+      <form th:action="@{/login}" method="post"
+        style=" padding: 40px 35px;
+               border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+                color: #333;">
+
+        <h2 style="text-align: center; color: #008171; margin-bottom: 25px; font-weight: 600;">
+          Connexion à MedocFacile
+        </h2>
+
+        <!-- Email -->
+        <div style="margin-bottom: 20px;">
+          <label for="email" style="display: block; margin-bottom: 6px; font-size: 0.9rem; color: #555;">E-mail</label>
+          <input id="email" type="email" name="email" th:value="${email}"
+            placeholder="Entrez votre adresse e-mail"
+            style="width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: 8px;
+                   font-size: 0.95rem; outline-color: #008171;">
+        </div>
+
+        <!-- Password -->
+        <div style="margin-bottom: 15px;">
+          <label for="password" style="display: block; margin-bottom: 6px; font-size: 0.9rem; color: #555;">Mot de passe</label>
+          <input id="password" type="password" name="password"
+            placeholder="Entrez votre mot de passe"
+            style="width: 100%; padding: 10px 14px; border: 1px solid #ccc; border-radius: 8px;
+                   font-size: 0.95rem; outline-color: #008171;">
+        </div>
+
+        <!-- Forgot password -->
+        <div style="text-align: right; margin-bottom: 15px;">
+          <a th:href="@{/forgot_password}" style="color: #008171; text-decoration: none; font-size: 0.85rem;">
+            Mot de passe oublié ?
+          </a>
+        </div>
+
+        <!-- Remember Me -->
+        <div style="display: flex; align-items: center; margin-bottom: 25px;">
+          <input type="checkbox" id="rememberMe" name="remember-me" th:checked="${rememberMe}"
+            style="accent-color: #008171; margin-right: 8px;">
+          <label for="rememberMe" style="font-size: 0.9rem;">Se souvenir de moi</label>
+        </div>
+
+        <!-- Submit -->
+        <div style="text-align: center;">
+          <button type="submit"
+            style="background-color: #008171; color: #fff; border: none; padding: 10px 25px;
+                   border-radius: 8px; font-size: 1rem; cursor: pointer;
+                   font-weight: 500; transition: 0.3s;">
+            Connexion
+          </button>
+        </div>
+      </form>
+
+      <!-- Description -->
+      <div class="description" style="
+         background: rgba(255,255,255,0.9);
+        padding: 30px 25px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        color: #008171; font-family: 'Inter', sans-serif;
+		">
+
+        <div class="heading" style="margin-bottom: 1.5rem;">
+          <p style="font-size: 1.1rem; font-weight: 600;">
+        Simplifiez la gestion de vos ordonnances avec notre solution
+          </p>
+          <h6 style="color: #333;">La solution rapide et fiable pour vos médicaments</h6>
+        </div>
+
+        <p><i class="fa-solid fa-file"></i> Soumettez et traitez vos ordonnances facilement.</p>
+        <p><i class="fa-solid fa-cart-plus"></i> Comparez et commandez vos médicaments en toute transparence.</p>
+        <p><i class="fa-solid fa-truck"></i> Faites-vous livrer à votre guise en un temps record.</p>
+      </div>
+
+    </div> <!-- end auth container -->
+  </main>
+</body>
+</html>

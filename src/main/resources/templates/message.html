@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${pageTitle}">Message</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/style.css}" />
+</head>
+<body>
+    <div class="container mt-5 text-center">
+        <h2 th:text="${pageTitle}">Message</h2>
+        <div th:if="${message != null}" class="alert alert-info" th:text="${message}"></div>
+        <div th:if="${error != null}" class="alert alert-danger" th:text="${error}"></div>
+        <a th:href="@{/login}" class="btn btn-primary mt-3">Go to Login</a>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments :: page_head(${pageTitle}, 'none')}" />
+
+<!-- Page-specific stylesheet is conditionally included by fragments :: page_head when `includeOrderDetailCss` is true -->
+
+<body>
+	<div th:replace="~{navigation :: menu}"></div>
+	
+	<div class="order-detail-container">
+		<!-- Breadcrumb -->
+		<nav class="breadcrumb-nav">
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item"><a th:href="@{/}"><i class="fas fa-home"></i> Home</a></li>
+				<li class="breadcrumb-item"><a th:href="@{/orders}"><i class="fas fa-file-medical"></i> Orders</a></li>
+				<li class="breadcrumb-item active">Order #<span th:text="${ordo.id}">1</span></li>
+			</ol>
+		</nav>
+
+		<!-- Main Content Grid -->
+		<div class="order-detail-grid">
+			<!-- Image Section -->
+			<div class="image-section">
+				<div class="main-image-wrapper">
+					<img id="bigImage" th:src="@{${ordo.mainImagePath}}" 
+						th:alt="${ordo.shortDescription}" 
+						index="0"
+						onerror="this.src='/images/image-thumbnail.png'" />
+					<div class="zoom-indicator">
+						<i class="fas fa-search-plus"></i>
+						Click to zoom
+					</div>
+				</div>
+				
+				<!-- Thumbnail Gallery -->
+				<div class="thumbnail-gallery">
+					<div class="thumbnail-item active">
+						<img class="image-thumbnail" th:src="@{${ordo.mainImagePath}}" 
+							index="0" 
+							onerror="this.src='/images/image-thumbnail.png'" />
+					</div>
+					<th:block th:each="extraImage, status : ${ordo.images}">
+						<div class="thumbnail-item">
+							<img class="image-thumbnail" th:src="@{${extraImage.imagePath}}" 
+								th:index="${status.count}"
+								onerror="this.src='/images/image-thumbnail.png'" />
+						</div>
+					</th:block>
+				</div>
+			</div>
+
+			<!-- Info Section -->
+			<div class="info-section">
+				<div class="order-header">
+					<!-- Status Badge -->
+					<span class="order-badge" th:classappend="${ordo.enabled ? 'active' : 'pending'}">
+						<i th:class="${ordo.enabled ? 'fas fa-check-circle' : 'fas fa-clock'}"></i>
+						<span th:text="${ordo.enabled ? 'Active' : 'Pending'}">Status</span>
+					</span>
+					
+					<!-- Order ID -->
+					<div class="order-id">
+						<i class="fas fa-hashtag"></i> Order ID: <strong th:text="${ordo.id}">1</strong>
+					</div>
+					
+					<!-- Title -->
+					<h1 class="order-title" th:utext="${ordo.shortDescription}">
+						Order Description
+					</h1>
+					
+					<!-- Patient Info -->
+					<div class="patient-info">
+						<div class="patient-avatar">
+							<img th:if="${ordo.user.photos != null}" 
+								th:src="@{'/user-photos/' + ${ordo.user.photos}}"
+								th:alt="${ordo.user.fullName}"
+								onerror="this.style.display='none'; this.parentElement.textContent=this.alt.substring(0,1).toUpperCase();" />
+							<span th:if="${ordo.user.photos == null}" 
+								th:text="${ordo.user.firstName.substring(0,1).toUpperCase()}">P</span>
+						</div>
+						<div class="patient-details">
+							<div class="patient-label">Patient</div>
+							<h3 class="patient-name" th:text="${ordo.user.fullName}">Patient Name</h3>
+						</div>
+					</div>
+				</div>
+
+				<!-- Description -->
+				<div class="order-description">
+					<h3 class="section-title">
+						<i class="fas fa-file-alt"></i>
+						Prescription Details
+					</h3>
+					<div class="description-content" th:utext="${ordo.shortDescription}">
+						Order description goes here
+					</div>
+				</div>
+
+				<!-- Meta Information -->
+				<div class="meta-grid">
+					<div class="meta-card">
+						<div class="meta-icon"><i class="fas fa-calendar-plus"></i></div>
+						<div class="meta-label">Created</div>
+						<div class="meta-value" th:text="${#dates.format(ordo.createdTime, 'MMM dd, yyyy')}">Date</div>
+					</div>
+					<div class="meta-card">
+						<div class="meta-icon"><i class="fas fa-calendar-check"></i></div>
+						<div class="meta-label">Updated</div>
+						<div class="meta-value" th:text="${#dates.format(ordo.updatedTime, 'MMM dd, yyyy')}">Date</div>
+					</div>
+					<div class="meta-card">
+						<div class="meta-icon"><i class="fas fa-images"></i></div>
+						<div class="meta-label">Images</div>
+						<div class="meta-value" th:text="${#lists.size(ordo.images) + 1}">1</div>
+					</div>
+				</div>
+
+				<!-- Action Buttons -->
+				<div class="action-buttons">
+					<a th:href="@{'/medocs/edit/' + ${ordo.id}}" 
+						class="action-btn primary"
+						sec:authorize="hasAnyRole('ROLE_Client', 'ROLE_Admin')"
+						th:if="${user.id == ordo.user.id || #authorization.expression('hasRole(''ROLE_Admin'')')}">
+						<i class="fas fa-edit"></i>
+						Edit Order
+					</a>
+					
+					<a th:href="@{'/ask_question/' + ${ordo.id}}" 
+						class="action-btn primary"
+						sec:authorize="hasRole('ROLE_Pharmacie')">
+						<i class="fas fa-comment-medical"></i>
+						Ask Question
+					</a>
+					
+					<a th:href="@{/orders}" class="action-btn secondary">
+						<i class="fas fa-arrow-left"></i>
+						Back to Orders
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Questions Section -->
+		<div class="questions-section">
+			<div class="questions-header">
+				<h2 class="questions-title">
+					<i class="fas fa-comments"></i>
+					Questions & Answers
+				</h2>
+				<div class="questions-stats">
+					<div class="stat-item">
+						<div class="stat-number" th:text="${numberOfQuestions}">0</div>
+						<div class="stat-label">Total</div>
+					</div>
+					<div class="stat-item">
+						<div class="stat-number" th:text="${numberOfAnsweredQuestions}">0</div>
+						<div class="stat-label">Answered</div>
+					</div>
+				</div>
+			</div>
+			
+			<div th:replace="ordonnances/question_answer :: content"></div>
+		</div>
+
+		<!-- Image Carousel Modal -->
+		<div th:replace="ordonnances/images_carousel :: content"></div>
+		
+		<div th:replace="fragments :: modal_dialog"></div>
+
+		<div th:replace="fragments :: footer"></div>
+	</div>
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			// Image thumbnail switching
+			$(".image-thumbnail").on("mouseover", function() {
+				const currentImageSource = $(this).attr("src");
+				const currentImageIndex = $(this).attr("index");
+				
+				// Update main image
+				$("#bigImage").attr("src", currentImageSource);
+				$("#bigImage").attr("index", currentImageIndex);
+				
+				// Update active thumbnail
+				$(".thumbnail-item").removeClass("active");
+				$(this).closest(".thumbnail-item").addClass("active");
+			});
+			
+			// Click main image to open carousel
+			$("#bigImage").on("click", function() {
+				const imageIndex = parseInt($(this).attr("index"));
+				$("#carouselModal").modal("show");
+				$("#carouselExampleIndicators").carousel(imageIndex);
+			});
+			
+			// Thumbnail click
+			$(".image-thumbnail").on("click", function() {
+				const imageIndex = parseInt($(this).attr("index"));
+				$("#carouselModal").modal("show");
+				$("#carouselExampleIndicators").carousel(imageIndex);
+			});
+		});
+	</script>
+
+	<script type="text/javascript">
+		contextPath = "[[@{/}]]";
+		productId = "[[${ordo.id}]]";
+		var csrfHeaderName = "[[${_csrf.headerName}]]";
+		var csrfValue = "[[${_csrf.token}]]";
+
+		$(document).ready(function () {
+			bigImage = $("#bigImage");
+
+			$(".image-thumbnail").mouseover(function () {
+				currentImageSource = $(this).attr("src");
+				currentImageIndex = $(this).attr("index");
+
+				bigImage.attr("src", currentImageSource);
+				bigImage.attr("index", currentImageIndex);
+			});
+
+			bigImage.on("click", function () {
+				$("#carouselModal").modal("show");
+				imageIndex = parseInt(bigImage.attr("index"));
+				$("#carouselExampleIndicators").carousel(imageIndex);
+			});
+		});
+	</script>
+
+	<script type="text/javascript" th:src="@{/js/common_modal.js}"></script>
+	<script type="text/javascript" th:src="@{/js/question_post.js}"></script>
+</body>
+
+</html>

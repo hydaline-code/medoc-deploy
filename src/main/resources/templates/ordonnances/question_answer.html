@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<body>
+	<div th:fragment="content">
+		<div class="questions-content">
+			<!-- Question Form -->
+			<div sec:authorize="isAuthenticated()" class="question-form-wrapper">
+				<form id="formQuestion" class="question-form">
+					<div class="form-group">
+						<label for="question" class="form-label">
+							<i class="fas fa-comment-dots"></i>
+							Your Question or Comment
+						</label>
+						<textarea 
+							id="question" 
+							class="form-control" 
+							rows="4" 
+							placeholder="Ask a question about this prescription..."
+							required></textarea>
+						<div class="form-help">
+							<i class="fas fa-info-circle"></i>
+							Be specific to get helpful answers
+						</div>
+					</div>
+					<div class="form-actions">
+						<th:block th:if="${numberOfQuestions > 3}">
+							<a th:href="@{'/questions/' + ${ordo.id}+'/'+${user.id}}" class="view-all-link">
+								<i class="fas fa-list"></i>
+								View all [[${numberOfQuestions}]] questions
+							</a>
+						</th:block>
+						<button type="submit" id="buttonPostQuestion" class="action-btn primary">
+							<i class="fas fa-paper-plane"></i>
+							Post Question
+						</button>
+					</div>
+				</form>
+			</div>
+
+			<!-- Anonymous User Message -->
+			<div sec:authorize="!isAuthenticated()" class="auth-required">
+				<i class="fas fa-lock"></i>
+				<p>Please <a th:href="@{/login}">sign in</a> to post questions or comments.</p>
+			</div>
+
+			<!-- Questions List -->
+			<div class="questions-list">
+				<div th:replace="questions_votes :: content"></div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

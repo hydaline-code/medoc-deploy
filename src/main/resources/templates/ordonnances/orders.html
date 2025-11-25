@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+	<head th:replace="fragments :: page_head('Orders', 'none')" />
+	<link rel="stylesheet" th:href="@{/css/orders.css(v=1)}" />
+	<link rel="stylesheet" th:href="@{/css/navigation.css(v=12)}" />
+</head>
+
+<body>
+	<div th:replace="navigation :: menu"></div>
+	
+	<div class="orders-container">
+		<!-- Page Header -->
+		<div class="orders-header">
+			<div class="orders-title-section">
+				<h1 class="orders-title">
+					<i class="fas fa-file-medical"></i>
+					<span th:text="${pageTitle}">Orders</span>
+				</h1>
+				<p class="orders-subtitle" sec:authorize="hasRole('ROLE_Admin')">
+					Manage all orders in the system
+				</p>
+				<p class="orders-subtitle" sec:authorize="hasRole('ROLE_Pharmacie')">
+					View available prescriptions for processing
+				</p>
+				<p class="orders-subtitle" sec:authorize="hasRole('ROLE_Client')">
+					Track and manage your prescription orders
+				</p>
+			</div>
+			
+			<!-- Action Buttons -->
+			<div class="orders-actions">
+				<a th:href="@{/medocs/new}" class="action-btn" sec:authorize="hasAnyRole('ROLE_Client', 'ROLE_Admin')">
+					<i class="fas fa-plus-circle"></i>
+					New Order
+				</a>
+				<button class="action-btn secondary" onclick="window.location.reload()">
+					<i class="fas fa-sync-alt"></i>
+					Refresh
+				</button>
+			</div>
+		</div>
+
+		<!-- Stats Summary -->
+		<div class="orders-stats">
+			<div class="stat-box total">
+				<div class="stat-label">Total Orders</div>
+				<div class="stat-value" th:text="${totalOrders}">0</div>
+			</div>
+			<div class="stat-box active">
+				<div class="stat-label">Active Orders</div>
+				<div class="stat-value" th:text="${activeOrders}">0</div>
+			</div>
+			<div class="stat-box pending">
+				<div class="stat-label">Pending Orders</div>
+				<div class="stat-value" th:text="${pendingOrders}">0</div>
+			</div>
+		</div>
+
+		<!-- Filters and Search -->
+		<div class="orders-controls">
+			<div class="search-box">
+				<i class="fas fa-search"></i>
+				<input type="text" id="searchInput" placeholder="Search orders by description..." 
+					onkeyup="filterOrders()">
+			</div>
+			
+			<div class="filter-group">
+				<button class="filter-btn active" onclick="filterByStatus('all')">
+					<i class="fas fa-th"></i> All
+				</button>
+				<button class="filter-btn" onclick="filterByStatus('active')">
+					<i class="fas fa-check-circle"></i> Active
+				</button>
+				<button class="filter-btn" onclick="filterByStatus('pending')">
+					<i class="fas fa-clock"></i> Pending
+				</button>
+			</div>
+		</div>
+
+		<!-- Orders Grid -->
+		<div class="orders-grid" id="ordersGrid">
+			<!-- Empty State -->
+			<div th:if="${#lists.isEmpty(listOrdos)}" class="empty-state" style="grid-column: 1 / -1;">
+				<div class="empty-icon">
+					<i class="fas fa-inbox"></i>
+				</div>
+				<h3 class="empty-title">No Orders Found</h3>
+				<p class="empty-text">There are no orders to display at the moment.</p>
+				<a th:href="@{/medocs/new}" class="action-btn" sec:authorize="hasAnyRole('ROLE_Client', 'ROLE_Admin')">
+					<i class="fas fa-plus-circle"></i>
+					Create Your First Order
+				</a>
+			</div>
+
+			<!-- Order Cards -->
+			<div th:each="ordo : ${listOrdos}" class="order-card" 
+				th:data-status="${ordo.enabled ? 'active' : 'pending'}"
+				th:data-description="${ordo.shortDescription}">
+				
+				<!-- Order Image -->
+				<div class="order-image">
+					<img th:src="@{${ordo.mainImagePath}}" 
+						th:alt="${ordo.shortDescription}"
+						onerror="this.src='/images/image-thumbnail.png'" />
+					
+					<!-- Status Badge -->
+					<span class="order-status-badge" 
+						th:classappend="${ordo.enabled ? 'active' : 'pending'}">
+						<i th:class="${ordo.enabled ? 'fas fa-check-circle' : 'fas fa-clock'}"></i>
+						<span th:text="${ordo.enabled ? 'Active' : 'Pending'}">Status</span>
+					</span>
+				</div>
+				
+				<!-- Order Content -->
+				<div class="order-content">
+					<div class="order-id">
+						<i class="fas fa-hashtag"></i>
+						Order #<span th:text="${ordo.id}">1</span>
+					</div>
+					
+					<div class="order-description" th:text="${ordo.shortDescription}">
+						Order description goes here
+					</div>
+					
+					<!-- Meta Information -->
+					<div class="order-meta">
+						<div class="meta-item">
+							<i class="fas fa-user"></i>
+							<span th:text="${ordo.user.firstName + ' ' + ordo.user.lastName}">User Name</span>
+						</div>
+						<div class="meta-item">
+							<i class="fas fa-calendar-alt"></i>
+							<span th:text="${#dates.format(ordo.createdTime, 'MMM dd, yyyy')}">Date</span>
+						</div>
+					</div>
+					
+					<!-- Action Buttons -->
+					<div class="order-footer">
+						<a th:href="@{'/ordo/' + ${ordo.id}}" class="order-btn primary">
+							<i class="fas fa-eye"></i>
+							View Details
+						</a>
+						
+						<!-- Admin/Client Edit Button -->
+						<a th:href="@{'/medocs/edit/' + ${ordo.id}}" 
+							class="order-btn"
+							sec:authorize="hasAnyRole('ROLE_Client', 'ROLE_Admin')"
+							th:if="${currentUser.id == ordo.user.id || isAdmin}">
+							<i class="fas fa-edit"></i>
+							Edit
+						</a>
+						
+						<!-- Pharmacy Ask Question Button -->
+						<a th:href="@{'/ask_question/' + ${ordo.id}}" 
+							class="order-btn"
+							sec:authorize="hasRole('ROLE_Pharmacie')">
+							<i class="fas fa-comment-medical"></i>
+							Ask
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div th:replace="fragments :: footer"></div>
+	</div>
+	
+	<script>
+		// Filter orders by status
+		function filterByStatus(status) {
+			const cards = document.querySelectorAll('.order-card');
+			const buttons = document.querySelectorAll('.filter-btn');
+			
+			// Update active button
+			buttons.forEach(btn => btn.classList.remove('active'));
+			event.target.closest('.filter-btn').classList.add('active');
+			
+			// Filter cards
+			cards.forEach(card => {
+				if (status === 'all') {
+					card.style.display = 'flex';
+				} else {
+					const cardStatus = card.getAttribute('data-status');
+					card.style.display = cardStatus === status ? 'flex' : 'none';
+				}
+			});
+			
+			checkEmptyState();
+		}
+		
+		// Search filter
+		function filterOrders() {
+			const searchInput = document.getElementById('searchInput').value.toLowerCase();
+			const cards = document.querySelectorAll('.order-card');
+			
+			cards.forEach(card => {
+				const description = card.getAttribute('data-description').toLowerCase();
+				card.style.display = description.includes(searchInput) ? 'flex' : 'none';
+			});
+			
+			checkEmptyState();
+		}
+		
+		// Check if grid is empty after filtering
+		function checkEmptyState() {
+			const cards = document.querySelectorAll('.order-card');
+			const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
+			const grid = document.getElementById('ordersGrid');
+			const existingEmptyState = grid.querySelector('.empty-state');
+			
+			if (visibleCards.length === 0 && !existingEmptyState) {
+				const emptyState = document.createElement('div');
+				emptyState.className = 'empty-state';
+				emptyState.style.gridColumn = '1 / -1';
+				emptyState.innerHTML = `
+					<div class="empty-icon"><i class="fas fa-search"></i></div>
+					<h3 class="empty-title">No Results Found</h3>
+					<p class="empty-text">Try adjusting your search or filter criteria</p>
+				`;
+				grid.appendChild(emptyState);
+			} else if (visibleCards.length > 0 && existingEmptyState) {
+				existingEmptyState.remove();
+			}
+		}
+		
+		// Initialize page
+		document.addEventListener('DOMContentLoaded', function() {
+			console.log('Orders page loaded successfully');
+		});
+	</script>
+</body>
+
+</html>

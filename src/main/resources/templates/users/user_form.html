@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<head th:replace="~{fragments :: page_head('Users', 'none')}" />
+	<link rel="stylesheet" th:href="@{/css/user-form.css(v=4)}" />
+</head>
+
+<body>
+	<div th:replace="~{navigation :: menu}"></div>
+	
+	<div class="user-form-container">
+		<!-- Page Header -->
+		<div class="user-form-header">
+			<h1 class="user-form-title">
+				<i class="fas fa-user-edit"></i>
+				<span th:text="${user.id == null ? 'Create New User' : 'Edit User'}">Manage Users</span>
+			</h1>
+			<a th:href="@{/users}" class="btn-back">
+				<i class="fas fa-arrow-left"></i>
+				Back to Users
+			</a>
+		</div>
+
+
+		<!-- Form -->
+		<form th:action="@{/users/save}" method="post" enctype="multipart/form-data"
+			th:object="${user}" onsubmit="return checkEmailUnique(this);" class="user-form">
+			<input type="hidden" th:field="*{id}" />
+			
+			<!-- Account Information Section -->
+			<div class="form-section">
+				<h3 class="section-title">
+					<i class="fas fa-user-circle"></i>
+					Account Information
+				</h3>
+				<div class="row g-4">
+					<!-- Email -->
+					<div class="col-md-6">
+						<label for="email" class="form-label form-label-required">
+							<i class="fas fa-envelope"></i>
+							Email Address
+						</label>
+						<input id="email" type="email" class="form-control" th:field="*{email}" 
+							placeholder="user@example.com" required minlength="8" maxlength="128" />
+					</div>
+
+					<!-- First Name -->
+					<div class="col-md-6">
+						<label for="firstName" class="form-label form-label-required">
+							<i class="fas fa-user"></i>
+							First Name
+						</label>
+						<input id="firstName" type="text" class="form-control" th:field="*{firstName}" 
+							placeholder="John" required minlength="2" maxlength="45" />
+					</div>
+
+					<!-- Last Name -->
+					<div class="col-md-6">
+						<label for="lastName" class="form-label form-label-required">
+							<i class="fas fa-user"></i>
+							Last Name
+						</label>
+						<input id="lastName" type="text" class="form-control" th:field="*{lastName}" 
+							placeholder="Doe" required minlength="2" maxlength="45" />
+					</div>
+
+					<!-- Password -->
+					<div class="col-md-6">
+						<label for="password" class="form-label" th:classappend="${user.id == null ? 'form-label-required' : ''}">
+							<i class="fas fa-lock"></i>
+							Password
+						</label>
+						<input th:if="${user.id == null}" id="password" type="password" class="form-control" 
+							th:field="*{password}" placeholder="Min. 8 characters" required minlength="8" 
+							maxlength="20" oninput="validatePassword()" />
+						<input th:if="${user.id != null}" id="password" type="password" class="form-control" 
+							th:field="*{password}" placeholder="Leave empty to keep current password" 
+							minlength="8" maxlength="20" oninput="validatePassword()" />
+						<ul id="passwordErrors" class="password-errors"></ul>
+					</div>
+				</div>
+			</div>
+
+			<!-- Contact Information Section -->
+			<div class="form-section">
+				<h3 class="section-title">
+					<i class="fas fa-address-card"></i>
+					Contact Information
+				</h3>
+				<div class="row g-4">
+					<!-- Phone Number -->
+					<div class="col-md-6">
+						<label for="phoneNumber" class="form-label form-label-required">
+							<i class="fas fa-phone"></i>
+							Phone Number
+						</label>
+						<input id="phoneNumber" type="text" class="form-control" th:field="*{phoneNumber}" 
+							placeholder="+1 (555) 123-4567" required maxlength="15" minlength="8" />
+					</div>
+
+					<!-- Address Line 1 -->
+					<div class="col-md-6">
+						<label for="addressLine1" class="form-label form-label-required">
+							<i class="fas fa-map-marker-alt"></i>
+							Address Line 1
+						</label>
+						<input id="addressLine1" type="text" class="form-control" th:field="*{addressLine1}" 
+							placeholder="123 Main Street" required maxlength="64" minlength="3" />
+					</div>
+
+					<!-- Address Line 2 -->
+					<div class="col-md-6">
+						<label for="addressLine2" class="form-label">
+							<i class="fas fa-map-marker-alt"></i>
+							Address Line 2
+						</label>
+						<input id="addressLine2" type="text" class="form-control" th:field="*{addressLine2}" 
+							placeholder="Apartment, suite, etc. (optional)" maxlength="64" />
+					</div>
+
+					<!-- City -->
+					<div class="col-md-6">
+						<label for="city" class="form-label">
+							<i class="fas fa-city"></i>
+							City
+						</label>
+						<input id="city" type="text" class="form-control" th:field="*{city}" 
+							placeholder="New York" maxlength="45" minlength="2" />
+					</div>
+
+					<!-- State/Province -->
+					<div class="col-md-6">
+						<label for="state" class="form-label">
+							<i class="fas fa-map"></i>
+							State/Province
+						</label>
+						<input id="state" type="text" class="form-control" th:field="*{state}" 
+							placeholder="NY" maxlength="45" minlength="3" />
+					</div>
+
+					<!-- Postal Code -->
+					<div class="col-md-6">
+						<label for="postalCode" class="form-label">
+							<i class="fas fa-mail-bulk"></i>
+							Postal Code
+						</label>
+						<input id="postalCode" type="text" class="form-control" th:field="*{postalCode}" 
+							placeholder="10001" maxlength="10" minlength="2" />
+					</div>
+				</div>
+			</div>
+
+			<!-- Roles & Permissions Section -->
+			<div class="form-section">
+				<h3 class="section-title">
+					<i class="fas fa-user-shield"></i>
+					Roles & Permissions
+				</h3>
+				<div class="row g-4">
+					<!-- Roles -->
+					<div class="col-md-6">
+						<label class="form-label form-label-required">
+							<i class="fas fa-users-cog"></i>
+							Assign Roles
+						</label>
+						<div class="checkbox-wrapper">
+							<th:block th:each="role : ${listRoles}">
+								<div class="form-check">
+									<input type="checkbox" class="form-check-input" th:field="*{roles}" 
+										th:value="${role.id}" th:id="'role_' + ${role.id}" />
+									<div style="flex: 1;">
+										<label class="form-check-label" th:for="'role_' + ${role.id}" 
+											th:text="${role.name}">Role Name</label>
+										<div class="form-check-description" th:text="${role.description}">
+											Role description
+										</div>
+									</div>
+								</div>
+							</th:block>
+						</div>
+					</div>
+
+					<!-- Enabled -->
+					<div class="col-md-6">
+						<label class="form-label">
+							<i class="fas fa-toggle-on"></i>
+							Account Status
+						</label>
+						<div class="checkbox-wrapper">
+							<div class="form-check">
+								<input type="checkbox" th:field="*{enabled}" class="form-check-input" id="enabled" />
+								<div style="flex: 1;">
+									<label class="form-check-label" for="enabled">
+										Account Enabled
+									</label>
+									<div class="form-check-description">
+										Enable this account to allow user login and access
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Profile Photo Section -->
+			<div class="form-section">
+				<h3 class="section-title">
+					<i class="fas fa-camera"></i>
+					Profile Photo
+				</h3>
+				<div class="photo-upload-section">
+					<div class="photo-upload-input">
+						<label for="fileImage">
+							<i class="fas fa-upload"></i>
+							Upload Profile Picture
+						</label>
+						<input type="hidden" th:field="*{photos}" />
+						<input type="file" id="fileImage" name="image" accept="image/png, image/jpeg" />
+						<p>
+							<i class="fas fa-info-circle"></i>
+							Supported formats: PNG, JPEG (Max size: 100KB)
+						</p>
+					</div>
+					<div class="photo-preview">
+						<span class="photo-preview-label">Preview</span>
+						<img id="thumbnail" alt="User profile preview" th:src="@{${user.photosImagePath}}" 
+							class="photo-thumbnail" />
+					</div>
+				</div>
+			</div>
+
+			<!-- Form Actions -->
+			<div class="form-actions">
+				<div class="form-actions-buttons">
+					<button type="submit" id="submitBtn" class="btn-primary-custom">
+						<i class="fas fa-save"></i>
+						Save User
+					</button>
+					<button type="button" id="buttonCancel" class="btn-secondary-custom">
+						<i class="fas fa-times"></i>
+						Cancel
+					</button>
+				</div>
+			</div>
+		</form>
+
+
+
+	</div>
+
+	<div th:replace="~{modal_fragments :: modal_dialog}"></div>
+	<div th:replace="~{fragments :: footer}"></div>
+
+	<script type="text/javascript">
+		MAX_FILE_SIZE = 102400;
+		moduleURL = "[[@{/users}]]";
+
+		function validatePassword() {
+			const password = document.getElementById("password").value;
+			const passwordErrors = document.getElementById("passwordErrors");
+			const submitBtn = document.getElementById("submitBtn");
+
+			if (!password) {
+				passwordErrors.innerHTML = "";
+				submitBtn.disabled = false;
+				return;
+			}
+
+			const criteria = [
+				{regex: /[0-9]/, message: "Must contain at least one digit"},
+				{regex: /[a-z]/, message: "Must contain at least one lowercase letter"},
+				{regex: /[A-Z]/, message: "Must contain at least one uppercase letter"},
+				{regex: /[@#$%^&+=]/, message: "Must contain at least one special character (@#$%^&+=)"},
+				{regex: /.{8,}/, message: "Must be at least 8 characters long"}
+			];
+
+			let isValid = true;
+			const errors = criteria.map(criterion => {
+				if (!criterion.regex.test(password)) {
+					isValid = false;
+					return `<li>${criterion.message}</li>`;
+				}
+				return "";
+			}).join("");
+
+			passwordErrors.innerHTML = errors;
+			submitBtn.disabled = !isValid;
+		}
+
+		function checkEmailUnique(form) {
+			const url = "[[@{/users/check_email}]]";
+			const userEmail = $("#email").val();
+			const userId = $("#id").val();
+			const csrfValue = $("input[name='_csrf']").val();
+
+			const params = {id: userId, email: userEmail, _csrf: csrfValue};
+
+			$.post(url, params, function (response) {
+				if (response == "OK") {
+					form.submit();
+				} else if (response == "Duplicated") {
+					showModalDialog("Warning", "There is another user with the email " + userEmail);
+				} else {
+					showModalDialog("Error", "Unknown response from server");
+				}
+			}).fail(function () {
+				showModalDialog("Error", "Could not connect to the server");
+			});
+
+			return false;
+		}
+	</script>
+	<script th:src="@{/js/common_form.js}"></script>
+</body>
+</html>

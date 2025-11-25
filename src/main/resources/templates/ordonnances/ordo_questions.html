@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: page_head(${pageTitle}, 'none')" />
+<body>
+<div class="order-detail-container">
+	<div th:replace="navigation :: menu"></div>
+
+	<div class="order-detail-grid">
+		<div class="image-section">
+			<div class="main-image-wrapper">
+				<img th:src="@{${ordo.mainImagePath}}" th:alt="${ordo.shortDescription}" index="0" onerror="this.src='/images/image-thumbnail.png'" />
+			</div>
+		</div>
+
+		<div class="info-section">
+			<div>
+				<h1 class="order-title" th:utext="${ordo.shortDescription}"></h1>
+			</div>
+			<div>
+				<a th:href="@{'/questions/' + ${ordo.id}+'/'+ ${user.id} + '/page/' + ${currentPage} + '?sortField=askTime&sortDir=desc'}">Sort by most recent</a>
+			</div>
+		</div>
+	</div>
+	
+	<div th:replace="questions_votes :: content"></div>
+	
+	<div th:replace="fragments :: pagination('/questions/' + ${ordo.id}+'/'+ ${user.id}, 'questions')"></div>
+		
+	<div th:replace="fragments :: modal_dialog"></div>
+		
+	<div th:replace="fragments :: footer"></div>
+</div>
+<script type="text/javascript">
+	contextPath = "[[@{/}]]";
+	var csrfHeaderName = "[[${_csrf.headerName}]]";
+	var csrfValue = "[[${_csrf.token}]]";
+		
+</script>
+<script th:src="@{/js/common_modal.js}"></script>
+</body>
+</html>

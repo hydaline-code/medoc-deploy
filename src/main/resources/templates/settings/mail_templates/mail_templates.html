@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+	<div th:fragment="content" th:remove="tag">
+		<form th:action="@{/settings/save_mail_templates}" method="post" class="settings-form">
+			<div class="form-section">
+				<h3 class="form-section-title">
+					<i class="fas fa-envelope-open-text"></i>
+					Email Templates Configuration
+				</h3>
+				
+				<ul class="nav nav-tabs settings-tabs" id="mailTemplatesTab" role="tablist" style="margin-bottom: 2rem;">
+					<li class="nav-item">
+						<a class="nav-link active" data-toggle="tab" href="#customerVerification" role="tab">
+							<i class="fas fa-user-check"></i>
+							<span>Customer Verification</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" data-toggle="tab" href="#orderConfirmationClient" role="tab">
+							<i class="fas fa-receipt"></i>
+							<span>Order Confirmation</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" data-toggle="tab" href="#orderReceptionPharma" role="tab">
+							<i class="fas fa-pills"></i>
+							<span>Pharmacy Reception</span>
+						</a>
+					</li>
+				</ul>
+
+				<div class="tab-content">
+					<div class="tab-pane active" id="customerVerification" role="tabpanel">
+						<div th:replace="settings/mail_templates/customer_verification:: content"></div>
+					</div>
+					<div class="tab-pane" id="orderConfirmationClient" role="tabpanel">
+						<div th:replace="settings/mail_templates/order_confirmation_client:: content"></div>
+					</div>
+					<div class="tab-pane" id="orderReceptionPharma" role="tabpanel">
+						<div th:replace="settings/mail_templates/order_reception_pharma:: content"></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="settings-actions">
+				<button type="submit" class="btn-save-settings">
+					<i class="fas fa-save"></i>
+					Save All Templates
+				</button>
+			</div>
+		</form>
+	</div>
+</body>
+
+</html>

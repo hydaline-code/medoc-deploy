@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Créer un compte - MesMedocFacile</title>
+  
+  <link rel="stylesheet" type="text/css" th:href="@{/css/register-form.css(v=1763186405)}" />
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+  <div class="register-wrapper">
+    <!-- Left Section - Branding & Benefits -->
+    <div class="register-left">
+      <div class="brand-section">
+        <div class="logo-container">
+          <img th:src="@{/images/logo.png}" alt="MesMedocFacile Logo" class="brand-logo"/>
+        </div>
+        <h1 class="brand-title">MesMedocFacile</h1>
+        <p class="brand-subtitle">Rejoignez notre communauté</p>
+      </div>
+
+      <div class="benefits-section">
+        <h2 class="benefits-title">Pourquoi créer un compte ?</h2>
+        <div class="benefit-list">
+          <div class="benefit-item">
+            <div class="benefit-icon">
+              <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="benefit-content">
+              <h3>Compte Sécurisé</h3>
+              <p>Vos données personnelles et médicales sont protégées avec un chiffrement de niveau bancaire</p>
+            </div>
+          </div>
+          
+          <div class="benefit-item">
+            <div class="benefit-icon">
+              <i class="fas fa-history"></i>
+            </div>
+            <div class="benefit-content">
+              <h3>Historique Complet</h3>
+              <p>Accédez à l'historique de toutes vos ordonnances et commandes à tout moment</p>
+            </div>
+          </div>
+          
+          <div class="benefit-item">
+            <div class="benefit-icon">
+              <i class="fas fa-bell"></i>
+            </div>
+            <div class="benefit-content">
+              <h3>Notifications</h3>
+              <p>Recevez des alertes pour vos renouvellements et le suivi de vos livraisons</p>
+            </div>
+          </div>
+
+          <div class="benefit-item">
+            <div class="benefit-icon">
+              <i class="fas fa-tags"></i>
+            </div>
+            <div class="benefit-content">
+              <h3>Offres Exclusives</h3>
+              <p>Profitez d'offres spéciales et de réductions réservées aux membres</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+     
+    </div>
+
+    <!-- Right Section - Registration Form -->
+    <div class="register-right">
+      <div class="register-container">
+        <!-- Header -->
+        <div class="register-header">
+          <h2 class="register-title">Créer votre compte</h2>
+          <p class="register-subtitle">Rejoignez-nous en quelques étapes simples</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-steps">
+          <div class="step active">
+            <div class="step-number">1</div>
+            <span class="step-label">Infos personnelles</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <span class="step-label">Adresse</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <span class="step-label">Confirmation</span>
+          </div>
+        </div>
+
+        <!-- Registration Form -->
+        <form th:action="@{/create_user}" method="post" enctype="multipart/form-data" 
+              th:object="${user}" class="register-form" onsubmit="return checkEmailUnique(this);">
+          
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+          
+          <!-- Photo Upload Section -->
+          <div class="photo-section">
+            <div class="photo-upload">
+              <h4 style="font-size: 0.9rem; color: var(--gray-700); margin-bottom: 0.75rem; font-weight: 600;">
+                <i class="fas fa-camera" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
+                Photo de profil (optionnelle)
+              </h4>
+              <input type="hidden" th:field="*{photos}" />
+              <label for="fileImage" class="photo-label">
+                <div class="photo-preview">
+                  <img id="thumbnail" alt="Photo de profil" th:src="@{${user.photosImagePath}}" />
+                  <div class="photo-overlay">
+                    <i class="fas fa-camera"></i>
+                    <span>Changer</span>
+                  </div>
+                </div>
+              </label>
+              <input type="file" id="fileImage" name="image" accept="image/png, image/jpeg" style="display: none;" />
+              <p class="photo-hint">Cliquez sur l'image pour télécharger</p>
+            </div>
+          </div>
+
+          <!-- Personal Information -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-user"></i>
+              Informations Personnelles
+            </h3>
+            
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="firstName" class="form-label">
+                  <i class="fas fa-user-circle"></i>
+                  Prénom
+                </label>
+                <input type="text" id="firstName" th:field="*{firstName}" 
+                       class="form-input" placeholder="Votre prénom" 
+                       required minlength="2" maxlength="45" />
+              </div>
+
+              <div class="form-group">
+                <label for="lastName" class="form-label">
+                  <i class="fas fa-user-circle"></i>
+                  Nom
+                </label>
+                <input type="text" id="lastName" th:field="*{lastName}" 
+                       class="form-input" placeholder="Votre nom" 
+                       required minlength="2" maxlength="45" />
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="email" class="form-label">
+                  <i class="fas fa-envelope"></i>
+                  Adresse e-mail
+                </label>
+                <input type="email" id="email" th:field="*{email}" 
+                       class="form-input" placeholder="votreemail@exemple.com" 
+                       required maxlength="45" minlength="8" />
+              </div>
+
+              <div class="form-group">
+                <label for="phoneNumber" class="form-label">
+                  <i class="fas fa-phone"></i>
+                  Téléphone
+                </label>
+                <input type="text" id="phoneNumber" th:field="*{phoneNumber}" 
+                       class="form-input" placeholder="+33 6 12 34 56 78" 
+                       required maxlength="15" minlength="8" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Password Section -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-lock"></i>
+              Sécurité
+            </h3>
+            
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="password" class="form-label">
+                  <i class="fas fa-key"></i>
+                  Mot de passe
+                </label>
+                <div class="password-wrapper">
+                  <input type="password" id="password" th:field="*{password}" 
+                         class="form-input" placeholder="Minimum 6 caractères" 
+                         required minlength="6" maxlength="15" 
+                         oninput="validatePassword()" />
+                  <button type="button" class="password-toggle" onclick="togglePassword('password', this)">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+                <div id="passwordErrors" class="password-errors"></div>
+              </div>
+
+              <div class="form-group">
+                <label for="confirmPassword" class="form-label">
+                  <i class="fas fa-key"></i>
+                  Confirmer le mot de passe
+                </label>
+                <div class="password-wrapper">
+                  <input type="password" id="confirmPassword" 
+                         class="form-input" placeholder="Retapez le mot de passe" 
+                         required minlength="6" maxlength="15"
+                         oninput="checkPasswordMatch(this)" />
+                  <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address Section -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-map-marker-alt"></i>
+              Adresse de livraison
+            </h3>
+            
+            <div class="form-group">
+              <label for="addressLine1" class="form-label">
+                <i class="fas fa-home"></i>
+                Adresse ligne 1
+              </label>
+              <input type="text" id="addressLine1" th:field="*{addressLine1}" 
+                     class="form-input" placeholder="Numéro et nom de rue" 
+                     required minlength="3" maxlength="64" />
+            </div>
+
+            <div class="form-group">
+              <label for="addressLine2" class="form-label">
+                <i class="fas fa-building"></i>
+                Adresse ligne 2 (optionnel)
+              </label>
+              <input type="text" id="addressLine2" th:field="*{addressLine2}" 
+                     class="form-input" placeholder="Appartement, bâtiment, etc." 
+                     maxlength="64" />
+            </div>
+
+            <div class="form-row-3">
+              <div class="form-group">
+                <label for="city" class="form-label">
+                  <i class="fas fa-city"></i>
+                  Ville
+                </label>
+                <input type="text" id="city" th:field="*{city}" 
+                       class="form-input" placeholder="Votre ville" 
+                       minlength="2" maxlength="45" />
+              </div>
+
+              <div class="form-group">
+                <label for="state" class="form-label">
+                  <i class="fas fa-map"></i>
+                  Région
+                </label>
+                <input type="text" id="state" th:field="*{state}" 
+                       class="form-input" placeholder="Votre région" 
+                       minlength="3" maxlength="45" />
+              </div>
+
+              <div class="form-group">
+                <label for="postalCode" class="form-label">
+                  <i class="fas fa-mail-bulk"></i>
+                  Code postal
+                </label>
+                <input type="text" id="postalCode" th:field="*{postalCode}" 
+                       class="form-input" placeholder="75001" 
+                       maxlength="10" minlength="2" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Terms & Submit -->
+          <div class="form-footer">
+            <label class="checkbox-label">
+              <input type="checkbox" class="form-checkbox" required />
+              <span class="checkbox-text">
+                J'accepte les 
+                <a href="#" class="link">conditions d'utilisation</a> et la 
+                <a href="#" class="link">politique de confidentialité</a>
+              </span>
+            </label>
+
+            <button type="submit" id="submitBtn" class="btn-register">
+              <i class="fas fa-user-plus"></i>
+              <span>Créer mon compte</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Login Link -->
+        <div class="login-section">
+          <p class="login-text">Vous avez déjà un compte ?</p>
+          <a th:href="@{/login}" class="btn-login-link">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Se connecter</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    contextPath = "[[@{/}]]";
+    MAX_FILE_SIZE = 102400;
+
+    // Photo preview
+    $(document).ready(function() {
+      $("#fileImage").change(function() {
+        if (!checkFileSize(this)) {
+          return;
+        }
+        showImageThumbnail(this);
+      });
+    });
+
+    function checkFileSize(fileInput) {
+      const fileSize = fileInput.files[0].size;
+      if (fileSize > MAX_FILE_SIZE) {
+        fileInput.setCustomValidity("Vous devez choisir une image de moins de " + (MAX_FILE_SIZE / 1024) + " KB!");
+        fileInput.reportValidity();
+        return false;
+      } else {
+        fileInput.setCustomValidity("");
+        return true;
+      }
+    }
+
+    function showImageThumbnail(fileInput) {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        $("#thumbnail").attr("src", e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Password validation
+    function validatePassword() {
+      const password = document.getElementById("password").value;
+      
+      // If password is empty, don't show validation
+      if (password.length === 0) {
+        document.getElementById("passwordErrors").innerHTML = "";
+        return false;
+      }
+      
+      const criteria = [
+        {regex: /[0-9]/, message: "Au moins un chiffre"},
+        {regex: /[a-z]/, message: "Au moins une lettre minuscule"},
+        {regex: /[A-Z]/, message: "Au moins une lettre majuscule"},
+        {regex: /.{6,}/, message: "Au moins 6 caractères"}
+      ];
+
+      let isValid = true;
+      const errors = criteria.map(criterion => {
+        if (!criterion.regex.test(password)) {
+          isValid = false;
+          return `<div class="error-item"><i class="fas fa-times-circle"></i> ${criterion.message}</div>`;
+        }
+        return `<div class="success-item"><i class="fas fa-check-circle"></i> ${criterion.message}</div>`;
+      }).join("");
+
+      document.getElementById("passwordErrors").innerHTML = errors;
+      return isValid;
+    }
+
+    // Password match check
+    function checkPasswordMatch(confirmPassword) {
+      if (confirmPassword.value != $("#password").val()) {
+        confirmPassword.setCustomValidity("Les mots de passe ne correspondent pas !");
+      } else {
+        confirmPassword.setCustomValidity("");
+      }
+    }
+
+    // Password toggle
+    function togglePassword(inputId, button) {
+      const input = document.getElementById(inputId);
+      const icon = button.querySelector('i');
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    // Email uniqueness check
+    function checkEmailUnique(form) {
+      console.log("Checking email uniqueness...");
+      url = "[[@{/users/check_email}]]";
+      userEmail = $("#email").val();
+      csrfValue = $("input[name='_csrf']").val();
+      params = {email: userEmail, _csrf: csrfValue};
+
+      console.log("Email:", userEmail);
+      console.log("CSRF:", csrfValue);
+
+      $.post(url, params, function(response) {
+        console.log("Server response:", response);
+        if (response == "OK") {
+          console.log("Email is unique, submitting form...");
+          form.submit();
+        } else if (response == "Duplicated") {
+          showError("Un compte existe déjà avec cet email : " + userEmail);
+        } else {
+          showError("Réponse inconnue du serveur: " + response);
+        }
+      }).fail(function(xhr, status, error) {
+        console.error("AJAX error:", status, error);
+        console.error("Response:", xhr.responseText);
+        showError("Impossible de se connecter au serveur. Erreur: " + error);
+      });
+
+      return false;
+    }
+
+    function showError(message) {
+      alert(message);
+      console.error(message);
+    }
+  </script>
+</body>
+</html>

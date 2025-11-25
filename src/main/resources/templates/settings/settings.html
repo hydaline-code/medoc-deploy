@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<head th:replace="fragments :: page_head('Settings', 'tag')" />
+	<link rel="stylesheet" th:href="@{/richtext/richtext.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/settings.css(v=1)}" />
+	<link rel="stylesheet" th:href="@{/css/navigation.css(v=12)}" />
+	<script th:src="@{/richtext/jquery.richtext.min.js}"></script>
+</head>
+
+<body>
+	<div th:replace="navigation :: menu"></div>
+	
+	<div class="settings-container">
+		<!-- Page Header -->
+		<div class="settings-header">
+			<h1 class="settings-title">
+				<i class="fas fa-cog"></i>
+				Site Settings
+			</h1>
+		</div>
+
+		<!-- Success Message -->
+		<div th:if="${message != null}" class="success-alert">
+			<i class="fas fa-check-circle"></i>
+			<span>[[${message}]]</span>
+		</div>
+
+		<!-- Tabs Navigation -->
+		<ul class="settings-tabs" id="settingTab" role="tablist">
+			<li class="nav-item">
+				<a class="nav-link active" data-toggle="tab" href="#mailServer" role="tab">
+					<i class="fas fa-server"></i>
+					<span>Mail Server</span>
+				</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" data-toggle="tab" href="#mailTemplate" role="tab">
+					<i class="fas fa-envelope"></i>
+					<span>Mail Templates</span>
+				</a>
+			</li>
+		</ul>
+
+		<!-- Tab Content -->
+		<div class="settings-tab-content">
+			<div class="tab-content">
+				<div class="tab-pane active" id="mailServer" role="tabpanel">
+					<div th:replace="settings/mail_server :: content"></div>
+				</div>
+				<div class="tab-pane" id="mailTemplate" role="tabpanel">
+					<div th:replace="settings/mail_templates/mail_templates :: content"></div>
+				</div>
+			</div>
+		</div>
+
+		<div th:replace="fragments :: footer"></div>
+	</div>
+	
+	<script type="text/javascript">
+		MAX_FILE_SIZE = 102400; // 100KB
+
+		$(document).ready(function () {
+			// Initialize rich text editors
+			$("#customerVerificationContent").richText();
+			$("#orderConfirmationContentClient").richText({height: 400});
+			$("#orderReceptionPharmaMail").richText({height: 400});
+			
+			// Set first tab as active on page load
+			$('.settings-tabs .nav-link:first').addClass('active');
+			$('.tab-pane:first').addClass('active');
+		});
+	</script>
+	<script th:src="@{/js/common_form.js}"></script>
+</body>
+
+</html>

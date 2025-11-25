@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head th:replace="~{fragments :: page_head(${pageTitle}, 'tag')}">
+    <title>[[${pageTitle}]]</title>
+</head>
+<head>
+    <link rel="stylesheet" th:href="@{/richtext/richtext.min.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/css/ordonnance-form.css(v=2)}" />
+    <script th:src="@{/richtext/jquery.richtext.min.js}"></script>
+</head>
+
+<body>
+    <!-- Professional Header -->
+    <header class="nav-container">
+        <div class="navbar-brand">
+            <a th:href="@{/}">
+                <img th:src="@{/images/logo.png}" alt="Logo" class="logo-img" />
+            </a>
+        </div>
+
+        <h2>
+            <i class="fas fa-file-medical"></i>
+            Manage Ordonnances | [[${pageTitle}]]
+        </h2>
+
+        <button class="btn-back" onclick="history.back()">
+            <i class="fas fa-arrow-left"></i>
+            Retour
+        </button>
+    </header>
+
+    <!-- Main Form Container -->
+    <div class="form-main-container">
+        
+        <div class="form-card">
+            <form th:action="@{/medocs/save}" method="post" enctype="multipart/form-data" th:object="${ordo}">
+                <input type="hidden" th:field="*{id}" />
+
+                <!-- Form Header with Actions -->
+                <div class="form-header">
+                    <div class="form-header-title">
+                        <i class="fas fa-prescription"></i>
+                        <h3>Envoyer votre ordonnance</h3>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-form btn-save">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                        <button type="button" class="btn-form btn-cancel" id="buttonCancel">
+                            <i class="fas fa-times"></i>
+                            Annuler
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Form Body -->
+                <div class="form-body">
+                    <div th:replace="ordonnances/ordonnance_images :: content"></div>
+                </div>
+
+            </form>
+        </div>
+
+        <div th:replace="modal_fragments :: modal_dialog"></div>
+
+    </div>
+    <script th:src="@{/js/questionAnswer_post.js}"></script>
+    <script type="text/javascript">
+        MAX_FILE_SIZE = 502400; // 500KB
+        moduleURL = "[[@{/medocs}]]";
+        defaultImageThumbnailSrc = "[[@{/images/image-thumbnail.png}]]";
+        contextPath = "[[@{/}]]";
+        //productId = "[[${questions.![id]}]]";
+        var csrfHeaderName = "[[${_csrf.headerName}]]";
+        var csrfValue = "[[${_csrf.token}]]";
+        var productId = null;
+
+        function getTextareaValue(questionId) {
+            var textareaId = 'questionAnswer' + questionId; // Crée l'ID du textarea
+            var textareaValue = document.getElementById(textareaId).value; // Récupère la valeur
+            // Affecte la valeur à la variable globale `productId`
+            productId = questionId;
+
+            // Affiche la valeur dans la console
+            console.log('Valeur de la réponse pour la question ' + questionId + ' : ' + textareaValue);
+        }
+    </script>
+    <script th:src="@{/js/common_form.js}"></script>
+    <script th:src="@{/js/ordo_form.js}"></script>
+</body>
+
+</html>
+
+

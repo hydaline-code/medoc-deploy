@@ -1,0 +1,271 @@
+ <!-- <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+	    <title th:text="${pageTitle}">Page Title</title>
+	    <link rel="stylesheet" th:href="@{/css/navigation.css}" />
+	    <style>
+	        body {
+	            background: linear-gradient(to top, #008171, #ffffff, #008171);
+	            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	            margin: 0;
+	            box-sizing: border-box;
+	        }
+	    </style>
+	</head>
+<body>
+<div th:fragment="menu">
+    <form th:action="@{/logout}" method="post" th:hidden="true" name="logoutForm">
+        <input type="submit" />
+    </form>
+
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
+        <a class="navbar-brand" th:href="@{/}">
+            <img th:src="@{/images/logo.png}" alt="Logo" style="width: 100px;" />
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#topNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="topNavbar">
+            <ul class="navbar-nav ml-auto">
+                <th:block sec:authorize="hasAuthority('Admin')">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" th:href="@{/users}">Users</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" th:href="@{/users/new}">Create New</a>
+                            <a class="dropdown-item" th:href="@{/users}">View All</a>
+                        </div>
+                    </li>
+                </th:block>
+
+                <th:block sec:authorize="hasAuthority('Client')">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/medocs}">Mes Medocs</a>
+                    </li>
+                </th:block>
+
+                <th:block sec:authorize="hasAnyAuthority('Admin', 'Pharmacie', 'Shipper')">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/orders}">Orders</a>
+                    </li>
+                </th:block>
+
+                <th:block sec:authorize="hasAnyAuthority('Admin', 'Pharmacie')">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/report}">Sales Report</a>
+                    </li>
+                </th:block>
+
+                <li class="nav-item" sec:authorize="hasAuthority('Admin')">
+                    <a class="nav-link" th:href="@{/settings}">Settings</a>
+                </li>
+
+                <li class="nav-item">
+                    <span class="fa-solid fa-circle-user fa-2xl icon-silver"></span>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" th:href="@{/account}"
+                       sec:authentication="principal.fullname">Account</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" id="logoutLink" href="">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+</body>
+</html>
+
+ -->
+
+
+ <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${pageTitle}">Page Title</title>
+    <style>
+        body {
+            background: linear-gradient(to top, #008171, #ffffff, #008171);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+<div th:fragment="menu">
+
+    <!-- Hidden logout form -->
+    <form th:action="@{/logout}" method="post" th:hidden="true" name="logoutForm">
+        <input type="submit" />
+    </form>
+
+    <!-- Professional Enterprise Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        
+        <!-- Logo -->
+        <a class="navbar-brand" th:href="@{/}">
+            <img th:src="@{/images/logo.png}" alt="MesMedocsFacile Logo" />
+        </a>
+
+        <!-- Mobile toggler -->
+        <button class="navbar-toggler" type="button" id="navToggler">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navigation Links -->
+        <div class="navbar-collapse" id="topNavbar">
+            <ul class="navbar-nav ml-auto">
+
+                <!-- Admin: Users -->
+                <th:block sec:authorize="hasAuthority('Admin')">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" th:href="@{/users}">
+                            <i class="fas fa-users"></i> Users
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" th:href="@{/users/new}">
+                                <i class="fas fa-user-plus"></i> Create New
+                            </a>
+                            <a class="dropdown-item" th:href="@{/users}">
+                                <i class="fas fa-list"></i> View All
+                            </a>
+                        </div>
+                    </li>
+                </th:block>
+
+                <!-- Client: Mes Médocs -->
+                <th:block sec:authorize="hasAuthority('Client')">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/medocs}">
+                            <i class="fas fa-pills"></i> Mes Médocs
+                        </a>
+                    </li>
+                </th:block>
+
+                <!-- Orders -->
+                <th:block sec:authorize="hasAnyAuthority('Admin', 'Pharmacie', 'Shipper')">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/orders}">
+                            <i class="fas fa-box"></i> Orders
+                        </a>
+                    </li>
+                </th:block>
+
+                <!-- Sales Report -->
+                <th:block sec:authorize="hasAnyAuthority('Admin', 'Pharmacie')">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/report}">
+                            <i class="fas fa-chart-line"></i> Sales Report
+                        </a>
+                    </li>
+                </th:block>
+
+                <!-- Settings -->
+                <li class="nav-item" sec:authorize="hasAuthority('Admin')">
+                    <a class="nav-link" th:href="@{/settings}">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+
+                <!-- User Icon -->
+                <li class="nav-item">
+                    <span class="fa-solid fa-circle-user user-icon"></span>
+                </li>
+
+                <!-- Account Dropdown -->
+                <li class="nav-item dropdown account-dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" th:href="@{/account}">
+                        <span th:text="${#strings.substringBefore(#authentication.name, '@')}">Account</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" th:href="@{/account}">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-danger" id="logoutLink" href="">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+    
+    <script>
+        $(document).ready(function() {
+            // Set active state based on current URL
+            var currentPath = window.location.pathname;
+            $('.navbar-nav .nav-link').each(function() {
+                var link = $(this);
+                var href = link.attr('href');
+                
+                if (href && currentPath.indexOf(href) !== -1 && href !== '/') {
+                    link.closest('.nav-item').addClass('active');
+                } else if (href === '/' && currentPath === '/') {
+                    link.closest('.nav-item').addClass('active');
+                }
+            });
+            
+            // Mobile menu toggle functionality
+            $('#navToggler, .navbar-toggler').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                var $navbarCollapse = $('#topNavbar');
+                var $toggler = $('.navbar-toggler');
+                
+                console.log('Toggle clicked'); // Debug
+                
+                if ($navbarCollapse.hasClass('show')) {
+                    console.log('Closing menu'); // Debug
+                    $navbarCollapse.removeClass('show');
+                    $toggler.removeClass('active');
+                    $('body').removeClass('menu-open');
+                } else {
+                    console.log('Opening menu'); // Debug
+                    $navbarCollapse.addClass('show');
+                    $toggler.addClass('active');
+                    $('body').addClass('menu-open');
+                }
+            });
+            
+            // Close menu when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.navbar').length && $(window).width() < 992) {
+                    $('#topNavbar').removeClass('show');
+                    $('.navbar-toggler').removeClass('active');
+                    $('body').removeClass('menu-open');
+                }
+            });
+            
+            // Prevent clicks inside navbar from closing
+            $('.navbar').on('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // Close menu when clicking on a link (mobile)
+            $('.navbar-nav .nav-link').on('click', function() {
+                if ($(window).width() < 992) {
+                    setTimeout(function() {
+                        $('#topNavbar').removeClass('show');
+                        $('.navbar-toggler').removeClass('active');
+                        $('body').removeClass('menu-open');
+                    }, 300);
+                }
+            });
+            
+            // Logout link functionality
+            $("#logoutLink").on("click", function(e) {
+                e.preventDefault();
+                document.logoutForm.submit();
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

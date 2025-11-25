@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+	<div th:fragment="content" th:remove="tag">
+
+		<div class="form-row-setting">
+			<label class="form-label">
+				<i class="fas fa-heading"></i>
+				Email Subject
+			</label>
+			<input type="text" class="form-control" name="ORDER_CONFIRMATION_SUBJECT"
+				th:value="${ORDER_CONFIRMATION_SUBJECT}" placeholder="Your Order Has Been Confirmed" required />
+		</div>
+
+		<div class="form-section" style="margin-top: 1.5rem;">
+			<label class="form-label">
+				<i class="fas fa-file-alt"></i>
+				Email Content
+			</label>
+			<textarea rows="5" name="ORDER_CONFIRMATION_CONTENT"
+				id="orderConfirmationContentClient" class="form-control">[[${ORDER_CONFIRMATION_CONTENT}]]</textarea>
+		</div>
+	</div>
+</body>
+
+</html>

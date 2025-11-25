@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: page_head('Ordonnance', 'none')" />
+
+<body>
+	<div class="container-fluid">
+		<div th:replace="navigation :: menu"></div>
+		<div>
+			<h1>Ordo by Clients</h1>
+		</div>
+
+		<div class="row">
+			<div class="col" th:each="ordo : ${listOrdos}">
+				<div><img th:src="@{${ordo.mainImagePath}}" width="80" /></div>
+				<div>
+					<a th:href="@{'/ordo/' + ${ordo.id}}" th:utext="${ordo.shortName}"></a>
+				</div>
+			</div>
+		</div>
+
+		<div th:replace="fragments :: footer"></div>
+	</div>
+</body>
+
+</html>

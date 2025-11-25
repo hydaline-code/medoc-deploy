@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments :: page_head('Ordonnances','none')">
+</head>
+
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/ordonnances-list.css(v=1)}" />
+</head>
+
+<body>
+<div class="container-fluid ordonnances-container">
+
+    <!-- Navigation -->
+<div th:replace="navigation :: menu"></div>
+
+    <!-- Header -->
+    <div class="page-header">
+        <h2>
+            <i class="fas fa-prescription"></i>
+            Gérer mes Ordonnances
+        </h2>
+        <div class="header-actions">
+            <a th:href="@{/medocs/new}" class="btn-action btn-new" title="Nouvelle ordonnance">
+                <i class="fas fa-plus-circle"></i>
+                <span>Nouvelle ordonnance</span>
+            </a>
+            <th:block sec:authorize="hasAuthority('Admin')">
+                <a th:href="@{/medocs/export/csv}" class="btn-action btn-export" title="Exporter CSV">
+                    <i class="fas fa-file-csv"></i>
+                    <span>Exporter CSV</span>
+                </a>
+            </th:block>
+        </div>
+    </div>
+
+    <!-- Search form + message -->
+    <div th:replace="fragments :: search_form_and_message('/medocs/page/1')"></div>
+
+    <!-- Table View for Large Screens -->
+    <div class="ordonnances-table-wrapper">
+        <table class="ordonnances-table">
+            <thead>
+            <tr>
+                <th>Image</th>
+                <th>Description</th>
+                <th:block sec:authorize="hasAuthority('Client')">
+                    <th>Status</th>
+                </th:block>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="ordo : ${listOrdonnances}">
+                <td>
+                    <img th:src="@{${ordo.mainImagePath}}"
+                         class="ordo-image"
+                         alt="Ordonnance image"/>
+                </td>
+                <td>
+                    <div class="ordo-description" th:utext="${ordo.shortDescription}"></div>
+                </td>
+
+                <th:block sec:authorize="hasAuthority('Client')">
+                    <td>
+                        <span th:if="${ordo.enabled}" class="status-badge status-enabled">
+                            <i class="fas fa-check-circle"></i>
+                            Activée
+                        </span>
+                        <span th:unless="${ordo.enabled}" class="status-badge status-disabled">
+                            <i class="fas fa-times-circle"></i>
+                            Désactivée
+                        </span>
+                    </td>
+                </th:block>
+
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{'/medocs/detail/' + ${ordo.id}}"
+                           class="btn-table-action btn-view"
+                           title="Voir détails">
+                            <i class="fas fa-eye"></i>
+                        </a>
+
+                        <a th:href="@{'/medocs/edit/' + ${ordo.id}}"
+                           class="btn-table-action btn-edit"
+                           title="Modifier">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        <a href="#"
+                           class="btn-table-action btn-delete open-delete-modal"
+                           title="Supprimer"
+                           th:data-delete-url="@{'/medocs/delete/' + ${ordo.id}}">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Cards View -->
+    <div class="mobile-cards">
+        <div th:each="ordo : ${listOrdonnances}" class="ordo-card">
+            <img th:src="@{${ordo.mainImagePath}}" class="ordo-card-image" alt="Ordonnance image" />
+            
+            <div class="ordo-card-description" th:utext="${ordo.shortDescription}"></div>
+            
+            <th:block sec:authorize="hasAuthority('Client')">
+                <div style="margin-bottom: 1rem;">
+                    <span th:if="${ordo.enabled}" class="status-badge status-enabled">
+                        <i class="fas fa-check-circle"></i>
+                        Activée
+                    </span>
+                    <span th:unless="${ordo.enabled}" class="status-badge status-disabled">
+                        <i class="fas fa-times-circle"></i>
+                        Désactivée
+                    </span>
+                </div>
+            </th:block>
+            
+            <div class="ordo-card-actions">
+                <a th:href="@{'/medocs/detail/' + ${ordo.id}}"
+                   class="btn-table-action btn-view"
+                   title="Voir détails">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <a th:href="@{'/medocs/edit/' + ${ordo.id}}"
+                   class="btn-table-action btn-edit"
+                   title="Modifier">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="#"
+                   class="btn-table-action btn-delete open-delete-modal"
+                   title="Supprimer"
+                   th:data-delete-url="@{'/medocs/delete/' + ${ordo.id}}">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Professional Delete Modal -->
+    <div id="deleteModal" class="delete-modal">
+        <div class="delete-modal-content">
+            <div class="delete-modal-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Confirmer la suppression</h3>
+            <p>Êtes-vous sûr de vouloir supprimer cette ordonnance ? Cette action est irréversible.</p>
+            <div class="delete-modal-actions">
+                <button id="cancelDelete" class="modal-btn modal-btn-cancel">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <a id="confirmDelete" href="#" class="modal-btn modal-btn-confirm">
+                    <i class="fas fa-trash"></i> Supprimer
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer -->
+    <div th:replace="fragments :: footer"></div>
+
+</div>
+
+<!-- Scripts -->
+<script th:src="@{/js/common_list.js}"></script>
+
+<script type="text/javascript">
+    moduleURL = "[[@{/medocs}]]";
+
+    $(document).ready(function () {
+        $(".link-delete").on("click", function (e) {
+            e.preventDefault();
+            showDeleteConfirmModal($(this), 'ordo');
+        });
+
+        $(".link-detail").on("click", function (e) {
+            e.preventDefault();
+            let linkDetailURL = $(this).attr("href");
+            $("#detailModal").modal("show").find(".modal-content").load(linkDetailURL);
+        });
+    });
+
+    // Professional delete confirmation modal
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById("deleteModal");
+        const confirmBtn = document.getElementById("confirmDelete");
+        const cancelBtn = document.getElementById("cancelDelete");
+
+        // Open modal on delete button click
+        document.querySelectorAll(".open-delete-modal").forEach(btn => {
+            btn.addEventListener("click", function (e) {
+                e.preventDefault();
+                const deleteUrl = this.getAttribute("data-delete-url");
+                confirmBtn.setAttribute("href", deleteUrl);
+                modal.classList.add('delete-modal');
+                modal.style.display = "block";
+            });
+        });
+
+        // Close modal on cancel
+        cancelBtn.addEventListener("click", function () {
+            modal.style.display = "none";
+        });
+
+        // Close modal on outside click
+        window.addEventListener("click", function (event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Escape" && modal.style.display === "block") {
+                modal.style.display = "none";
+            }
+        });
+    });
+</script>
+</body>
+
+</html>

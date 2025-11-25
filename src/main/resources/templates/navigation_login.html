@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+	<head>
+	   <link rel="stylesheet" type="text/css" th:href="@{/css/navigation-login.css}" />
+	</head>
+
+<body>
+	<header>
+		<div th:fragment="header_menu(title)" class="nav-container">
+		  <div class="navbar-brand" th:href="@{/}">
+		    <img th:src="@{/images/logo.png}" alt="Logo" class="logo-img" />
+		  </div>
+		  <h2 th:if="${title}" th:text="${title}"></h2>
+		  <button class="btn-login" onclick="location.href='/login'">Login</button>
+		</div>
+
+	</header>
+  
+</body>
+</html>

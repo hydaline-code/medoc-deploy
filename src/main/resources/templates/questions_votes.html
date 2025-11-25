@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<body>
+	<div th:fragment="content" class="questions-list-content">
+		<th:block th:each="question : ${listQuestions}">
+			<div class="question-item" th:attr="data-question-id=${question.id}">
+				<!-- Question Section -->
+				<div class="question-header">
+					<div class="question-badge">
+						<i class="fas fa-question-circle"></i>
+						<span>Question</span>
+					</div>
+					<div class="question-meta">
+						<span class="question-author">
+							<i class="fas fa-user"></i>
+							[[${question.ordo.user.fullName}]]
+						</span>
+						<span class="question-time">
+							<i class="fas fa-clock"></i>
+							<span th:replace="fragments :: format_time(${question.askTime})"></span>
+						</span>
+					</div>
+				</div>
+				<div class="question-content">
+					[[${question.questionContent}]]
+				</div>
+
+				<!-- Answer Section (if answered) -->
+				<th:block th:if="${question.answered == true}">
+					<div class="answer-section">
+						<div class="answer-header">
+							<div class="answer-badge">
+								<i class="fas fa-check-circle"></i>
+								<span>Answer</span>
+							</div>
+							<div class="answer-meta">
+								<span class="answer-author">
+									<i class="fas fa-user-md"></i>
+									[[${question.answerer.fullName}]]
+								</span>
+								<span class="answer-time">
+									<i class="fas fa-calendar-check"></i>
+									<span th:replace="fragments :: format_time(${question.answerTime})"></span>
+								</span>
+							</div>
+						</div>
+						<div class="answer-content">
+							[[${question.answer}]]
+						</div>
+					</div>
+				</th:block>
+
+				<!-- Unanswered State -->
+				<th:block th:unless="${question.answered == true}">
+					<div class="unanswered-section">
+						<i class="fas fa-hourglass-half"></i>
+						<span>Awaiting answer...</span>
+					</div>
+
+					<!-- Inline answer form (visible to authenticated users who are not the original asker) -->
+					<div class="inline-answer" th:if="${user != null and question.answerer != null and user.id != question.answerer.id}">
+						<form th:id="${'formQuestionAnswer_' + question.id}" class="answer-form" onsubmit="return false;">
+							<textarea th:id="${'questionAnswer' + question.id}" class="form-control" rows="3" placeholder="Write your answer..."></textarea>
+							<div class="form-actions">
+								<button type="button" th:id="${'buttonPostQuestionAnswer_' + question.id}" class="action-btn primary">
+									<i class="fas fa-paper-plane"></i>
+									Post Answer
+								</button>
+							</div>
+						</form>
+					</div>
+				</th:block>
+			</div>
+		</th:block>
+
+		<!-- Empty State -->
+		<div th:if="${#lists.isEmpty(listQuestions)}" class="empty-questions">
+			<i class="fas fa-comments"></i>
+			<p>No questions yet. Be the first to ask!</p>
+		</div>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+	<div th:fragment="content" th:remove="tag">
+
+		<!-- Images Section -->
+		<div class="images-section">
+			<div class="section-title">
+				<i class="fas fa-images"></i>
+				Images de l'ordonnance
+			</div>
+
+			<div class="images-grid" id="divProductImages">
+				<!-- Main Image -->
+				<div class="image-upload-card" th:classappend="${ordo.mainImage != null} ? 'has-image' : ''">
+					<label class="image-label">
+						<i class="fas fa-image"></i>
+						Image principale
+						<span th:if="${ordo.mainImage != null}">: [[${ordo.mainImage}]]</span>
+					</label>
+					<div class="image-preview-container">
+						<i class="fas fa-image image-placeholder" th:if="${ordo.mainImage == null}"></i>
+						<img id="thumbnail" 
+						     alt="Main image preview" 
+						     class="image-preview" 
+						     th:style="${ordo.mainImage != null} ? 'display: block;' : 'display: none;'"
+						     th:src="@{${ordo.mainImagePath}}" />
+					</div>
+					<div class="file-input-wrapper">
+						<input type="file" 
+						       id="fileImage" 
+						       name="fileImage" 
+						       class="file-input"
+						       th:required="${ordo.mainImage == null}"
+						       accept="image/png, image/jpeg" />
+					</div>
+					<input type="hidden" th:field="*{mainImage}" />
+				</div>
+
+				<!-- Extra Images (Existing) -->
+				<th:block th:each="ordoImage, status : ${ordo.images}">
+					<div class="image-upload-card has-image" th:id="'divExtraImage' + ${status.index}">
+						<button type="button" 
+						        name="linkRemoveExtraImage" 
+						        class="btn-remove-image"
+						        title="Supprimer cette image">
+							<i class="fas fa-times"></i>
+						</button>
+						
+						<label class="image-label">
+							<i class="fas fa-image"></i>
+							Image supplémentaire #[[${status.index + 1}]]
+							<span th:if="${ordoImage.name != null}">: [[${ordoImage.name}]]</span>
+						</label>
+						
+						<div class="image-preview-container">
+							<img th:id="'extraThumbnail' + ${status.index}"
+							     th:alt="'Extra image #' + ${status.index + 1} + ' preview'" 
+							     class="image-preview"
+							     th:src="@{${ordoImage.imagePath}}" />
+						</div>
+						
+						<div class="file-input-wrapper">
+							<input type="file" 
+							       name="extraImage" 
+							       class="file-input"
+							       accept="image/png, image/jpeg" />
+						</div>
+
+						<input type="hidden" name="imageIDs" th:id="'imageId' + ${status.index}"
+							th:value="${ordoImage.id}" />
+						<input type="hidden" name="imageNames" th:id="'imageName' + ${status.index}"
+							th:value="${ordoImage.name}" />
+					</div>
+				</th:block>
+
+				<!-- New Extra Image Slot -->
+				<div class="image-upload-card" th:id="'divExtraImage' + ${numberOfExistingExtraImages}">
+					<label class="image-label" th:id="'extraImageHeader' + ${numberOfExistingExtraImages}">
+						<i class="fas fa-plus-circle"></i>
+						Image supplémentaire #[[${numberOfExistingExtraImages + 1}]]
+					</label>
+					<div class="image-preview-container">
+						<i class="fas fa-image image-placeholder" style="display: block;"></i>
+						<img th:id="'extraThumbnail' + ${numberOfExistingExtraImages}"
+						     th:alt="'Extra image' + ${numberOfExistingExtraImages} + ' preview'" 
+						     class="image-preview"
+						     th:src="@{/images/image-thumbnail.png}"
+						     style="display: none;" />
+					</div>
+					<div class="file-input-wrapper">
+						<input type="file" 
+						       name="extraImage" 
+						       class="file-input"
+						       accept="image/png, image/jpeg" />
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Description Section -->
+		<div class="description-section">
+			<div class="section-title">
+				<i class="fas fa-file-alt"></i>
+				Description
+			</div>
+			
+			<div class="form-group">
+				<label class="form-label">
+					Description de l'ordonnance 
+					<span class="required">*</span>
+				</label>
+				<textarea class="form-textarea" 
+				          th:field="*{shortDescription}" 
+				          required
+				          placeholder="Entrez la description de votre ordonnance..."
+				          th:attr="readonly=${#strings.isEmpty(ordo.shortDescription)} ? null : 'readonly'">
+				</textarea>
+			</div>
+		</div>
+
+		<!-- Questions & Answers Section -->
+		<div class="questions-section">
+			<div class="questions-header">
+				<i class="fas fa-comments"></i>
+				<h3>Avis et commentaires pour cette ordonnance</h3>
+			</div>
+
+			<th:block th:if="${listQuestions != null and !listQuestions.isEmpty()}">
+				<th:block th:each="question : ${listQuestions}">
+					<div class="question-card">
+						<div class="question-header">
+							<i class="fas fa-user-md"></i>
+							Pharmacie
+						</div>
+						<div class="question-content">
+							[[${question.questionContent}]]
+						</div>
+						<div class="question-meta">
+							<i class="fas fa-user"></i>
+							[[${question.answerer.fullName}]]
+							<span>•</span>
+							<span th:replace="fragments :: format_time(${question.askTime})"></span>
+						</div>
+
+						<th:block th:if="${question.answered == true}">
+							<div class="answer-section">
+								<div class="answer-header">
+									<i class="fas fa-check-circle"></i>
+									Réponse
+								</div>
+								<div class="answer-content">
+									[[${question.answer}]]
+								</div>
+								<div class="question-meta" style="margin-top: 0.75rem;">
+									<i class="fas fa-clock"></i>
+									<span th:replace="fragments :: format_time(${question.answerTime})"></span>
+								</div>
+							</div>
+						</th:block>
+
+						<!-- Answer Form (if not answered yet) -->
+						<th:block th:if="${question.answered != true}">
+							<div class="answer-section">
+								<div class="answer-header" style="color: #f59e0b;">
+									<i class="fas fa-reply"></i>
+									Répondre à cette question
+								</div>
+								<form th:id="'formQuestionAnswer_' + ${question.id}" style="margin-top: 1rem;">
+									<textarea th:id="'questionAnswer' + ${question.id}" 
+									          class="form-textarea"
+									          th:value="${question.answer}" 
+									          rows="3"
+									          placeholder="Tapez votre réponse ici..." 
+									          required></textarea>
+									<button type="button" 
+									        th:id="'buttonPostQuestionAnswer_' + ${question.id}"
+									        class="btn-form btn-save" 
+									        style="margin-top: 0.75rem;">
+										<i class="fas fa-paper-plane"></i>
+										Envoyer la réponse
+									</button>
+								</form>
+							</div>
+						</th:block>
+					</div>
+				</th:block>
+			</th:block>
+
+			<!-- Empty State -->
+			<th:block th:if="${listQuestions == null or listQuestions.isEmpty()}">
+				<div class="empty-state">
+					<i class="fas fa-comments"></i>
+					<p>Aucun avis pour cette ordonnance pour le moment</p>
+				</div>
+			</th:block>
+		</div>
+
+	</div>
+</body>
+
+</html>

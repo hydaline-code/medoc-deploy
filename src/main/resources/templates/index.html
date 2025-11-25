@@ -1,0 +1,326 @@
+<!-- <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head th:replace="fragments :: page_head('Home - MEDOCS', 'none')" />
+
+<body>
+	<div class="container-fluid">
+		<div th:replace="navigation :: menu"></div>
+		<div>
+			<h2>MedocsFacile Control Panel</h2>
+			<a th:href="@{/account}" sec:authentication="principal.fullname"></a>
+			<span sec:authentication="principal.authorities"></span>
+		</div>
+
+		<div th:replace="fragments :: footer"></div>
+
+	</div>
+
+</body>
+
+</html> -->
+
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head th:replace="fragments :: page_head('Home - MEDOCS', 'none')" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/navigation.css(v=12)}" />
+<link rel="stylesheet" type="text/css" th:href="@{/css/index.css(v=12)}" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<body>
+  <!-- Navigation -->
+  <div th:replace="navigation :: menu"></div>
+
+  <!-- Dashboard Container -->
+  <div class="dashboard-container">
+    
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+      <div class="header-content">
+        <h1>Tableau de Bord</h1>
+        <p class="subtitle">Vue d'ensemble de votre activité</p>
+      </div>
+      <div class="welcome-badge">
+        <div class="user-icon">
+          <i class="fas fa-user" sec:authorize="hasAuthority('Client')"></i>
+          <i class="fas fa-user-shield" sec:authorize="hasAuthority('Admin')"></i>
+          <i class="fas fa-user-md" sec:authorize="hasAuthority('Pharmacie')"></i>
+        </div>
+        <div class="user-info">
+          <span class="greeting">Bienvenue,</span>
+          <span class="username" sec:authentication="principal.fullname">Admin</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div sec:authorize="hasAuthority('Admin')">
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <p class="stat-title">Total Utilisateurs</p>
+              <h3 class="stat-value" th:text="${totalUsers}">0</h3>
+            </div>
+            <div class="stat-icon blue">
+              <i class="fas fa-users"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <p class="stat-title">Total Ordonnances</p>
+              <h3 class="stat-value" th:text="${totalOrders}">0</h3>
+            </div>
+            <div class="stat-icon green">
+              <i class="fas fa-file-prescription"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <p class="stat-title">Commandes Actives</p>
+              <h3 class="stat-value">-</h3>
+            </div>
+            <div class="stat-icon purple">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <p class="stat-title">Revenus</p>
+              <h3 class="stat-value">-</h3>
+            </div>
+            <div class="stat-icon orange">
+              <i class="fas fa-euro-sign"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h2 class="section-title">
+          <i class="fas fa-bolt"></i>
+          Actions Rapides
+        </h2>
+        <div class="actions-grid">
+          <a th:href="@{/users}" class="action-card">
+            <div class="action-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="action-content">
+              <h3>Gérer Utilisateurs</h3>
+              <p>Ajouter, modifier ou supprimer</p>
+            </div>
+          </a>
+
+          <a th:href="@{/orders}" class="action-card">
+            <div class="action-icon">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="action-content">
+              <h3>Voir Commandes</h3>
+              <p>Suivre toutes les commandes</p>
+            </div>
+          </a>
+
+          <a th:href="@{/settings}" class="action-card">
+            <div class="action-icon">
+              <i class="fas fa-cog"></i>
+            </div>
+            <div class="action-content">
+              <h3>Paramètres</h3>
+              <p>Configuration système</p>
+            </div>
+          </a>
+
+          <a th:href="@{/reports}" class="action-card">
+            <div class="action-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="action-content">
+              <h3>Rapports</h3>
+              <p>Statistiques détaillées</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLIENT DASHBOARD -->
+    <div sec:authorize="hasAuthority('Client')">
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <p class="stat-title">Mes Ordonnances</p>
+              <h3 class="stat-value">-</h3>
+            </div>
+            <div class="stat-icon blue">
+              <i class="fas fa-file-prescription"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <p class="stat-title">Mes Médicaments</p>
+              <h3 class="stat-value">-</h3>
+            </div>
+            <div class="stat-icon green">
+              <i class="fas fa-pills"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <p class="stat-title">Commandes</p>
+              <h3 class="stat-value">-</h3>
+            </div>
+            <div class="stat-icon purple">
+              <i class="fas fa-shopping-bag"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h2 class="section-title">
+          <i class="fas fa-bolt"></i>
+          Actions Rapides
+        </h2>
+        <div class="actions-grid">
+          <a th:href="@{/medocs}" class="action-card">
+            <div class="action-icon">
+              <i class="fas fa-pills"></i>
+            </div>
+            <div class="action-content">
+              <h3>Mes Médicaments</h3>
+              <p>Voir tous mes médicaments</p>
+            </div>
+          </a>
+
+          <a th:href="@{/orders}" class="action-card">
+            <div class="action-icon">
+              <i class="fas fa-history"></i>
+            </div>
+            <div class="action-content">
+              <h3>Mes Commandes</h3>
+              <p>Historique et suivi</p>
+            </div>
+          </a>
+
+          <a th:href="@{/prescriptions}" class="action-card">
+            <div class="action-icon">
+              <i class="fas fa-file-medical"></i>
+            </div>
+            <div class="action-content">
+              <h3>Ordonnances</h3>
+              <p>Gérer mes ordonnances</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHARMACIE DASHBOARD -->
+    <div sec:authorize="hasAuthority('Pharmacie')">
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <p class="stat-title">Total Ordonnances</p>
+              <h3 class="stat-value" th:text="${totalOrders}">0</h3>
+            </div>
+            <div class="stat-icon blue">
+              <i class="fas fa-file-prescription"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <p class="stat-title">En Attente</p>
+              <h3 class="stat-value">-</h3>
+            </div>
+            <div class="stat-icon orange">
+              <i class="fas fa-clock"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div>
+              <p class="stat-title">Traitées</p>
+              <h3 class="stat-value">-</h3>
+            </div>
+            <div class="stat-icon green">
+              <i class="fas fa-check-circle"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <h2 class="section-title">
+          <i class="fas fa-bolt"></i>
+          Actions Rapides
+        </h2>
+        <div class="actions-grid">
+          <a th:href="@{/orders/pharmacy}" class="action-card">
+            <div class="action-icon">
+              <i class="fas fa-prescription-bottle"></i>
+            </div>
+            <div class="action-content">
+              <h3>Commandes à Traiter</h3>
+              <p>Voir les nouvelles commandes</p>
+            </div>
+          </a>
+
+          <a th:href="@{/orders}" class="action-card">
+            <div class="action-icon">
+              <i class="fas fa-history"></i>
+            </div>
+            <div class="action-content">
+              <h3>Historique</h3>
+              <p>Commandes traitées</p>
+            </div>
+          </a>
+
+          <a th:href="@{/inventory}" class="action-card">
+            <div class="action-icon">
+              <i class="fas fa-boxes"></i>
+            </div>
+            <div class="action-content">
+              <h3>Inventaire</h3>
+              <p>Gérer le stock</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
