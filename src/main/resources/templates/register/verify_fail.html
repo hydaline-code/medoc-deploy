@@ -1,20 +1,30 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments :: page_head('Verification Failed!', 'none')" />
-<body>
-<div class="container-fluid">
-	<div th:replace="navigation_login :: header_menu"></div>
-	
-	<div>&nbsp;</div>
-	
-	<div class="text-center">
-		<h2>Customer Verification</h2>
-		<h4>Your account was already verified, or the verification code is invalid.</h4>
-	</div>
+  <head th:replace="~{fragments :: page_head('Verification Failed', 'none')}" />
+  <body>
+    <div class="container-fluid">
+      <div>&nbsp;</div>
 
-	<div>&nbsp;</div>
-	
-	<div th:replace="fragments :: footer"></div>
-</div>	
-</body>
+      <div class="text-center" style="margin-top: 100px">
+        <div>
+          <i class="fas fa-times-circle fa-5x text-danger"></i>
+        </div>
+        <h2 class="mt-4">Verification Failed</h2>
+        <h4>Sorry, we could not verify your account.</h4>
+        <p>The verification link may be invalid or expired.</p>
+        <p class="mt-4">
+          <a th:href="@{/register}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Register Again
+          </a>
+          <a th:href="@{/}" class="btn btn-secondary ml-2">
+            <i class="fas fa-home"></i> Go Home
+          </a>
+        </p>
+      </div>
+
+      <div>&nbsp;</div>
+
+      <div th:replace="~{fragments :: footer}"></div>
+    </div>
+  </body>
 </html>

@@ -33,31 +33,31 @@ public class WebSecurityConfig {
 	}
 
 	@Bean
-	SecurityFilterChain configureHttp(HttpSecurity http) throws Exception {
-		http.authenticationProvider(authenticationProvider());
+SecurityFilterChain configureHttp(HttpSecurity http) throws Exception {
+    http.authenticationProvider(authenticationProvider());
 
-		http.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/register","/users/check_email","/create_user","/forgot_password","/reset_password").permitAll()
-				.requestMatchers("/users/**").hasAuthority("Admin")
-				// Allow Admin, Client and Pharmacie roles to post questions/answers
-				.requestMatchers("/post_question/**","/postQuestionAnswer/**").hasAnyAuthority("Admin", "Client", "Pharmacie")
-				.requestMatchers("/medocs/**").hasAuthority("Client")
-				.anyRequest().authenticated()
-			)
-			.formLogin(form -> form
-				.loginPage("/login")
-				.usernameParameter("email")
-				.defaultSuccessUrl("/", true) 
-				.permitAll())
+    http.authorizeHttpRequests(auth -> auth
+            .requestMatchers("/register","/users/check_email","/create_user","/verify","/forgot_password","/reset_password").permitAll()
+            .requestMatchers("/users/**").hasAuthority("Admin")
+            // Allow Admin, Client and Pharmacie roles to post questions/answers
+            .requestMatchers("/post_question/**","/postQuestionAnswer/**").hasAnyAuthority("Admin", "Client", "Pharmacie")
+            .requestMatchers("/medocs/**").hasAuthority("Client")
+            .anyRequest().authenticated()
+        )
+        .formLogin(form -> form
+            .loginPage("/login")
+            .usernameParameter("email")
+            .defaultSuccessUrl("/", true) 
+            .permitAll())
 
-			.logout(logout -> logout.permitAll())
+        .logout(logout -> logout.permitAll())
 
-			.rememberMe(rem -> rem
-					.key("AbcDefgHijKlmnOpqrs_1234567890")
-					.tokenValiditySeconds(7 * 24 * 60 * 60));
+        .rememberMe(rem -> rem
+                .key("AbcDefgHijKlmnOpqrs_1234567890")
+                .tokenValiditySeconds(7 * 24 * 60 * 60));
 
-			return http.build();
-	}
+        return http.build();
+}
 
 	@Bean
 	WebSecurityCustomizer configureWebSecurity() throws Exception {
